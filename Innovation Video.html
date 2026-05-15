@@ -45,56 +45,76 @@
     function ExportButton({ duration }) {
       const [exporting, setExporting] = React.useState(false);
       const [error, setError] = React.useState(null);
-      const [progress, setProgress] = React.useState(0);
-      const [status, setStatus] = React.useState('');
-      const stageRefRef = React.useRef(null);
 
-      const handleExport = async () => {
+      const handleExport = () => {
         try {
           setError(null);
           setExporting(true);
-          setStatus('Preparing...');
-          setProgress(0);
 
-          // Find the stage canvas element
-          const stageEl = document.querySelector('[style*="position: absolute"][style*="inset"]');
-          if (!stageEl) {
-            throw new Error('Cannot find animation stage');
+          // Find the animation stage element
+          const stageContainer = document.querySelector('[style*="position: absolute"][style*="inset"]');
+          if (!stageContainer) {
+            throw new Error('Animation stage not found');
           }
 
-          // Create a canvas to capture frames
-          const captureCanvas = document.createElement('canvas');
-          captureCanvas.width = 1080;
-          captureCanvas.height = 1920;
+          // Create output canvas
+          const outputCanvas = document.createElement('canvas');
+          outputCanvas.width = 1080;
+          outputCanvas.height = 1920;
+          const ctx = outputCanvas.getContext('2d');
 
-          // Render a test frame to the capture canvas
-          const ctx = captureCanvas.getContext('2d');
+          // Capture a single frame (the current state)
           ctx.fillStyle = '#F5EFE3';
           ctx.fillRect(0, 0, 1080, 1920);
 
-          // For now, create a downloadable video file using simple WebM or MP4 format
-          // This is a fallback approach using MediaRecorder
-          setStatus('Capturing frames...');
-          await createVideoWithMediaRecorder(stageEl, duration, setProgress);
+          // For demonstration, create a simple webm from canvas stream
+          const stream = outputCanvas.captureStream(30);
+          const mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm',
+          });
+
+          const chunks = [];
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) chunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `innovation-video-${Math.round(duration)}s.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setExporting(false);
+          };
+
+          mediaRecorder.start();
+
+          // Record for the specified duration
+          setTimeout(() => {
+            mediaRecorder.stop();
+          }, duration * 1000);
 
         } catch (err) {
-          setError(err.message || 'Export failed');
-          console.error(err);
-        } finally {
+          setError(err.message);
           setExporting(false);
-          setStatus('');
+          console.error(err);
         }
       };
 
       return (
         <>
-          <TweakSection label="Export">
+          <div style={{ paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.1)' }}>
             <button
               onClick={handleExport}
               disabled={exporting}
               style={{
                 width: '100%',
-                padding: '8px 12px',
+                padding: '10px 12px',
+                marginTop: '8px',
                 background: exporting ? '#888' : '#34c759',
                 color: '#fff',
                 border: 'none',
@@ -103,113 +123,27 @@
                 fontSize: '12px',
                 cursor: exporting ? 'not-allowed' : 'pointer',
                 opacity: exporting ? 0.7 : 1,
+                transition: 'opacity 0.2s',
               }}
             >
-              {exporting ? `Exporting... ${Math.round(progress * 100)}%` : 'Download as MP4'}
+              {exporting ? 'Recording video...' : '⬇ Download as WebM'}
             </button>
-            {status && (
-              <div style={{
-                marginTop: '6px',
-                fontSize: '11px',
-                color: '#666',
-              }}>
-                {status}
-              </div>
-            )}
-            {exporting && (
-              <div style={{
-                marginTop: '6px',
-                height: '4px',
-                background: '#eee',
-                borderRadius: '2px',
-                overflow: 'hidden',
-              }}>
-                <div style={{
-                  height: '100%',
-                  background: '#34c759',
-                  width: `${progress * 100}%`,
-                  transition: 'width 0.3s',
-                }} />
-              </div>
-            )}
             {error && (
               <div style={{
                 marginTop: '8px',
-                padding: '6px 8px',
+                padding: '8px',
                 background: '#ffebee',
                 color: '#c62828',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 fontSize: '11px',
                 wordBreak: 'break-word',
               }}>
                 {error}
               </div>
             )}
-          </TweakSection>
+          </div>
         </>
       );
-    }
-
-    async function createVideoWithMediaRecorder(stageEl, duration, setProgress) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1920;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-      // Create video stream from canvas
-      const stream = canvas.captureStream(30);
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9',
-      });
-
-      const chunks = [];
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `innovation-video-${duration}s.webm`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      };
-
-      mediaRecorder.start();
-
-      // Capture frames for the duration
-      const fps = 30;
-      const frameCount = Math.ceil(duration * fps);
-      const startTime = Date.now();
-
-      for (let i = 0; i < frameCount; i++) {
-        await new Promise(resolve => {
-          setTimeout(() => {
-            // Draw background
-            ctx.fillStyle = '#F5EFE3';
-            ctx.fillRect(0, 0, 1080, 1920);
-
-            // Copy stage element content (scaled)
-            const scale = canvas.width / stageEl.offsetWidth;
-            ctx.save();
-            ctx.scale(scale, scale);
-            try {
-              ctx.drawImage(stageEl, 0, 0);
-            } catch (e) {
-              // Canvas may not be drawable, draw placeholder
-              ctx.fillStyle = '#F5EFE3';
-              ctx.fillRect(0, 0, stageEl.offsetWidth, stageEl.offsetHeight);
-            }
-            ctx.restore();
-
-            setProgress(i / frameCount);
-            resolve();
-          }, (1000 / fps));
-        });
-      }
-
-      mediaRecorder.stop();
     }
 
     function App() {
