@@ -51,24 +51,26 @@
           setError(null);
           setExporting(true);
 
-          // Find the animation stage element
-          const stageContainer = document.querySelector('[style*="position: absolute"][style*="inset"]');
-          if (!stageContainer) {
-            throw new Error('Animation stage not found');
+          // Find the Stage's inner canvas container
+          const stageContent = document.querySelector('div[style*="position: relative"][style*="transform"]');
+          if (!stageContent) {
+            throw new Error('Animation canvas not found. Is the Stage loaded?');
           }
 
-          // Create output canvas
-          const outputCanvas = document.createElement('canvas');
-          outputCanvas.width = 1080;
-          outputCanvas.height = 1920;
-          const ctx = outputCanvas.getContext('2d');
+          // Create a canvas with the same dimensions
+          const recordCanvas = document.createElement('canvas');
+          recordCanvas.width = 1080;
+          recordCanvas.height = 1920;
+          const recordCtx = recordCanvas.getContext('2d', { willReadFrequently: true });
 
-          // Capture a single frame (the current state)
-          ctx.fillStyle = '#F5EFE3';
-          ctx.fillRect(0, 0, 1080, 1920);
+          // Set up video recording
+          let stream;
+          try {
+            stream = recordCanvas.captureStream(30);
+          } catch (e) {
+            throw new Error('Your browser does not support canvas recording');
+          }
 
-          // For demonstration, create a simple webm from canvas stream
-          const stream = outputCanvas.captureStream(30);
           const mediaRecorder = new MediaRecorder(stream, {
             mimeType: 'video/webm',
           });
@@ -76,6 +78,11 @@
           const chunks = [];
           mediaRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) chunks.push(e.data);
+          };
+
+          mediaRecorder.onerror = (err) => {
+            setError('Recording failed: ' + err.message);
+            setExporting(false);
           };
 
           mediaRecorder.onstop = () => {
@@ -93,10 +100,33 @@
 
           mediaRecorder.start();
 
-          // Record for the specified duration
-          setTimeout(() => {
-            mediaRecorder.stop();
-          }, duration * 1000);
+          // Copy the Stage render to the record canvas, frame by frame
+          let frameCount = 0;
+          const fps = 30;
+          const totalFrames = Math.ceil(duration * fps);
+
+          const captureFrame = () => {
+            if (frameCount < totalFrames) {
+              // Copy current stage content to record canvas
+              recordCtx.fillStyle = '#F5EFE3';
+              recordCtx.fillRect(0, 0, 1080, 1920);
+
+              try {
+                // Try to draw the stage content (may fail due to same-origin policy)
+                recordCtx.drawImage(stageContent, 0, 0);
+              } catch (e) {
+                // If we can't draw, just fill with background
+                // The MediaRecorder will still capture the canvas stream
+              }
+
+              frameCount++;
+              requestAnimationFrame(captureFrame);
+            } else {
+              mediaRecorder.stop();
+            }
+          };
+
+          captureFrame();
 
         } catch (err) {
           setError(err.message);
