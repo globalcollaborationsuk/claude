@@ -42,96 +42,140 @@
       "downloadVideo": false
     }/*EDITMODE-END*/;
 
-    // Export button component with progress
+    // Export button component with MP4 encoding via FFmpeg
     function ExportButton({ duration }) {
       const [exporting, setExporting] = React.useState(false);
       const [error, setError] = React.useState(null);
+      const [status, setStatus] = React.useState('');
+      const ffmpegRef = React.useRef(null);
 
-      const handleExport = () => {
+      const initFFmpeg = React.useCallback(async () => {
+        if (ffmpegRef.current?.isLoaded()) return ffmpegRef.current;
+
+        try {
+          const { FFmpeg, fetchFile } = FFmpeg;
+          const ffmpeg = new FFmpeg.FFmpeg();
+
+          // Set up logging
+          ffmpeg.on('log', ({ message }) => {
+            console.log('[FFmpeg]', message);
+          });
+
+          if (!ffmpeg.isLoaded()) {
+            setStatus('Loading FFmpeg...');
+            await ffmpeg.load();
+          }
+
+          ffmpegRef.current = ffmpeg;
+          return ffmpeg;
+        } catch (err) {
+          throw new Error(`FFmpeg init failed: ${err.message}`);
+        }
+      }, []);
+
+      const handleExport = async () => {
         try {
           setError(null);
           setExporting(true);
+          setStatus('Initializing...');
 
-          // Find the Stage's inner canvas container
+          // Find the Stage canvas
           const stageContent = document.querySelector('div[style*="position: relative"][style*="transform"]');
           if (!stageContent) {
-            throw new Error('Animation canvas not found. Is the Stage loaded?');
+            throw new Error('Animation canvas not found');
           }
 
-          // Create a canvas with the same dimensions
-          const recordCanvas = document.createElement('canvas');
-          recordCanvas.width = 1080;
-          recordCanvas.height = 1920;
-          const recordCtx = recordCanvas.getContext('2d', { willReadFrequently: true });
+          // Create capture canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = 1080;
+          canvas.height = 1920;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-          // Set up video recording
-          let stream;
-          try {
-            stream = recordCanvas.captureStream(30);
-          } catch (e) {
-            throw new Error('Your browser does not support canvas recording');
-          }
-
-          const mediaRecorder = new MediaRecorder(stream, {
-            mimeType: 'video/webm',
-          });
-
-          const chunks = [];
-          mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) chunks.push(e.data);
-          };
-
-          mediaRecorder.onerror = (err) => {
-            setError('Recording failed: ' + err.message);
-            setExporting(false);
-          };
-
-          mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `innovation-video-${Math.round(duration)}s.webm`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            setExporting(false);
-          };
-
-          mediaRecorder.start();
-
-          // Copy the Stage render to the record canvas, frame by frame
-          let frameCount = 0;
+          // Capture frames
           const fps = 30;
           const totalFrames = Math.ceil(duration * fps);
+          const frames = [];
 
-          const captureFrame = () => {
-            if (frameCount < totalFrames) {
-              // Copy current stage content to record canvas
-              recordCtx.fillStyle = '#F5EFE3';
-              recordCtx.fillRect(0, 0, 1080, 1920);
+          setStatus(`Capturing frames (0/${totalFrames})...`);
 
-              try {
-                // Try to draw the stage content (may fail due to same-origin policy)
-                recordCtx.drawImage(stageContent, 0, 0);
-              } catch (e) {
-                // If we can't draw, just fill with background
-                // The MediaRecorder will still capture the canvas stream
-              }
+          for (let i = 0; i < totalFrames; i++) {
+            // Draw background
+            ctx.fillStyle = '#F5EFE3';
+            ctx.fillRect(0, 0, 1080, 1920);
 
-              frameCount++;
-              requestAnimationFrame(captureFrame);
-            } else {
-              mediaRecorder.stop();
+            // Try to draw stage content
+            try {
+              ctx.drawImage(stageContent, 0, 0);
+            } catch (e) {
+              // Silently continue if drawing fails
             }
-          };
 
-          captureFrame();
+            // Convert to blob
+            await new Promise((resolve) => {
+              canvas.toBlob((blob) => {
+                frames.push(blob);
+                if ((i + 1) % 10 === 0 || i === totalFrames - 1) {
+                  setStatus(`Capturing frames (${i + 1}/${totalFrames})...`);
+                }
+                resolve();
+              }, 'image/png');
+            });
+          }
+
+          // Initialize FFmpeg
+          const ffmpeg = await initFFmpeg();
+
+          // Write frames to FFmpeg filesystem
+          setStatus('Writing frames to encoder...');
+          for (let i = 0; i < frames.length; i++) {
+            const data = await frames[i].arrayBuffer();
+            ffmpeg.FS('writeFile', `frame${String(i).padStart(6, '0')}.png`, new Uint8Array(data));
+            if ((i + 1) % 30 === 0 || i === frames.length - 1) {
+              setStatus(`Writing frames (${i + 1}/${frames.length})...`);
+            }
+          }
+
+          // Encode to MP4
+          setStatus('Encoding to MP4 (this may take a minute)...');
+          await ffmpeg.run(
+            '-framerate', String(fps),
+            '-i', 'frame%06d.png',
+            '-c:v', 'libx264',
+            '-preset', 'medium',
+            '-crf', '23',
+            '-pix_fmt', 'yuv420p',
+            'output.mp4'
+          );
+
+          // Read output file
+          setStatus('Finalizing...');
+          const data = ffmpeg.FS('readFile', 'output.mp4');
+          const blob = new Blob([data.buffer], { type: 'video/mp4' });
+
+          // Clean up files
+          ffmpeg.FS('unlink', 'output.mp4');
+          for (let i = 0; i < frames.length; i++) {
+            ffmpeg.FS('unlink', `frame${String(i).padStart(6, '0')}.png`);
+          }
+
+          // Download
+          setStatus('Downloading...');
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `innovation-video-${Math.round(duration)}s.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          setStatus('');
+          setExporting(false);
 
         } catch (err) {
           setError(err.message);
           setExporting(false);
+          setStatus('');
           console.error(err);
         }
       };
@@ -146,7 +190,7 @@
                 width: '100%',
                 padding: '10px 12px',
                 marginTop: '8px',
-                background: exporting ? '#888' : '#34c759',
+                background: exporting ? '#888' : '#007AFF',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '7px',
@@ -154,11 +198,27 @@
                 fontSize: '12px',
                 cursor: exporting ? 'not-allowed' : 'pointer',
                 opacity: exporting ? 0.7 : 1,
-                transition: 'opacity 0.2s',
+                transition: 'all 0.2s',
               }}
             >
-              {exporting ? 'Recording video...' : '⬇ Download as WebM'}
+              {exporting ? '⏳ ' : '⬇ '}
+              Download as MP4
             </button>
+
+            {status && (
+              <div style={{
+                marginTop: '8px',
+                padding: '6px 8px',
+                background: '#f0f0f0',
+                color: '#333',
+                borderRadius: '6px',
+                fontSize: '11px',
+                textAlign: 'center',
+              }}>
+                {status}
+              </div>
+            )}
+
             {error && (
               <div style={{
                 marginTop: '8px',
@@ -169,7 +229,7 @@
                 fontSize: '11px',
                 wordBreak: 'break-word',
               }}>
-                {error}
+                ⚠️ {error}
               </div>
             )}
           </div>
