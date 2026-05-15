@@ -594,8 +594,8 @@
     const AnimatedSkyline = ({ width = 720, start = 0.2 }) => {
       const { time } = useTimeline();
       const t = clamp((time - start) / 1.6, 0, 1);
-      const drawn = Math.max(0, (t * 2 - 0.2));
-      const PATHLEN = 1800;
+      const drawn = clamp(t * 2.2, 0, 1);
+      const PATHLEN = 2400;
       return (
         <div style={{ width, opacity: clamp((time - start + 0.1) * 4, 0, 1), overflow: 'visible' }}>
           <svg viewBox="0 0 540 220" width={width} height={width * (220 / 540)} style={{ display: 'block', overflow: 'visible' }}>
