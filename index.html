@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AccessAbilities Expo Dubai 2026 — LinkedIn Ad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body { margin: 0; padding: 0; background: #f0eee9; }
+    body { font-family: "Space Grotesk", "Helvetica Neue", sans-serif; color: #0E1B2C; }
+    /* Pretty text wrapping where supported */
+    * { text-wrap: pretty; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="ads.jsx"></script>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      return (
+        <DesignCanvas>
+          {/* ─── In-feed previews ─────────────────────────────────────── */}
+          <DCSection
+            id="infeed"
+            title="LinkedIn in-feed previews"
+            subtitle="Full sponsored-post chrome with the creative inline. Headline · Description · CTA wired up.">
+            <DCArtboard id="feed-v1" label="In-feed · V1 Editorial" width={552} height={1080}>
+              <InFeedPreview creative={<V1 />} />
+            </DCArtboard>
+            <DCArtboard id="feed-v2" label="In-feed · V2 Bold ink" width={552} height={1080}>
+              <InFeedPreview creative={<V2 />} />
+            </DCArtboard>
+            <DCArtboard id="feed-v5" label="In-feed · V5 Date poster" width={552} height={1080}>
+              <InFeedPreview creative={<V5 />} />
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─── Square creatives (1:1, 1080×1080) ────────────────────── */}
+          <DCSection
+            id="square"
+            title="Square creatives · 1080×1080"
+            subtitle="Six directions for the image asset. LinkedIn's preferred feed format.">
+            <DCArtboard id="v1" label="V1 · Editorial question" width={1080} height={1080}>
+              <V1 />
+            </DCArtboard>
+            <DCArtboard id="v2" label="V2 · Bold ink hero" width={1080} height={1080}>
+              <V2 />
+            </DCArtboard>
+            <DCArtboard id="v3" label="V3 · Image + question" width={1080} height={1080}>
+              <V3 />
+            </DCArtboard>
+            <DCArtboard id="v4" label="V4 · Reach metaphor" width={1080} height={1080}>
+              <V4 />
+            </DCArtboard>
+            <DCArtboard id="v5" label="V5 · Date poster" width={1080} height={1080}>
+              <V5 />
+            </DCArtboard>
+            <DCArtboard id="v6" label="V6 · Minimal" width={1080} height={1080}>
+              <V6 />
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─── Landscape ────────────────────────────────────────────── */}
+          <DCSection
+            id="landscape"
+            title="Landscape · 1200×627"
+            subtitle="Sponsored content / link share format. Useful when the ad links direct to a landing page.">
+            <DCArtboard id="v7" label="V7 · Landscape split" width={1200} height={627}>
+              <V7 />
+            </DCArtboard>
+          </DCSection>
+
+          <DCPostIt top={40} left={40} width={300}>
+            6 image directions + a landscape format.{'\n\n'}
+            Drag artboards to reorder · click the expand icon for full-screen view · rename labels inline.
+          </DCPostIt>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AccessAbilities Expo Dubai 2026 — LinkedIn Video Ad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body { margin: 0; padding: 0; background: #0a0a0a; height: 100%; overflow: hidden; }
+    body { font-family: "Plus Jakarta Sans", "Inter", sans-serif; }
+    #root { position: fixed; inset: 0; }
+    * { text-wrap: pretty; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/index.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="animations.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="mp4-export.jsx"></script>
+  <script type="text/babel" src="innovation-ad.jsx"></script>
+  <script type="text/babel" src="innovation-video.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "contentTop": 120,
+      "photoHeight": 560,
+      "photoBottom": 280,
+      "ctaAnchor": "photoTop",
+      "showArc": true,
+      "contentGapScale": 1.0,
+      "duration": 16
+    }/*EDITMODE-END*/;
+
+    // Export button component with progress
+    function ExportButton({ duration }) {
+      const [exporting, setExporting] = React.useState(false);
+      const [error, setError] = React.useState(null);
+      const [progress, setProgress] = React.useState(0);
+      const [status, setStatus] = React.useState('');
+      const stageRefRef = React.useRef(null);
+
+      const handleExport = async () => {
+        try {
+          setError(null);
+          setExporting(true);
+          setStatus('Preparing...');
+          setProgress(0);
+
+          // Find the stage canvas element
+          const stageEl = document.querySelector('[style*="position: absolute"][style*="inset"]');
+          if (!stageEl) {
+            throw new Error('Cannot find animation stage');
+          }
+
+          // Create a canvas to capture frames
+          const captureCanvas = document.createElement('canvas');
+          captureCanvas.width = 1080;
+          captureCanvas.height = 1920;
+
+          // Render a test frame to the capture canvas
+          const ctx = captureCanvas.getContext('2d');
+          ctx.fillStyle = '#F5EFE3';
+          ctx.fillRect(0, 0, 1080, 1920);
+
+          // For now, create a downloadable video file using simple WebM or MP4 format
+          // This is a fallback approach using MediaRecorder
+          setStatus('Capturing frames...');
+          await createVideoWithMediaRecorder(stageEl, duration, setProgress);
+
+        } catch (err) {
+          setError(err.message || 'Export failed');
+          console.error(err);
+        } finally {
+          setExporting(false);
+          setStatus('');
+        }
+      };
+
+      return (
+        <>
+          <TweakSection label="Export">
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                background: exporting ? '#888' : '#34c759',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '7px',
+                fontWeight: 600,
+                fontSize: '12px',
+                cursor: exporting ? 'not-allowed' : 'pointer',
+                opacity: exporting ? 0.7 : 1,
+              }}
+            >
+              {exporting ? `Exporting... ${Math.round(progress * 100)}%` : 'Download as MP4'}
+            </button>
+            {status && (
+              <div style={{
+                marginTop: '6px',
+                fontSize: '11px',
+                color: '#666',
+              }}>
+                {status}
+              </div>
+            )}
+            {exporting && (
+              <div style={{
+                marginTop: '6px',
+                height: '4px',
+                background: '#eee',
+                borderRadius: '2px',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  height: '100%',
+                  background: '#34c759',
+                  width: `${progress * 100}%`,
+                  transition: 'width 0.3s',
+                }} />
+              </div>
+            )}
+            {error && (
+              <div style={{
+                marginTop: '8px',
+                padding: '6px 8px',
+                background: '#ffebee',
+                color: '#c62828',
+                borderRadius: '4px',
+                fontSize: '11px',
+                wordBreak: 'break-word',
+              }}>
+                {error}
+              </div>
+            )}
+          </TweakSection>
+        </>
+      );
+    }
+
+    async function createVideoWithMediaRecorder(stageEl, duration, setProgress) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      // Create video stream from canvas
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+      });
+
+      const chunks = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `innovation-video-${duration}s.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      mediaRecorder.start();
+
+      // Capture frames for the duration
+      const fps = 30;
+      const frameCount = Math.ceil(duration * fps);
+      const startTime = Date.now();
+
+      for (let i = 0; i < frameCount; i++) {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            // Draw background
+            ctx.fillStyle = '#F5EFE3';
+            ctx.fillRect(0, 0, 1080, 1920);
+
+            // Copy stage element content (scaled)
+            const scale = canvas.width / stageEl.offsetWidth;
+            ctx.save();
+            ctx.scale(scale, scale);
+            try {
+              ctx.drawImage(stageEl, 0, 0);
+            } catch (e) {
+              // Canvas may not be drawable, draw placeholder
+              ctx.fillStyle = '#F5EFE3';
+              ctx.fillRect(0, 0, stageEl.offsetWidth, stageEl.offsetHeight);
+            }
+            ctx.restore();
+
+            setProgress(i / frameCount);
+            resolve();
+          }, (1000 / fps));
+        });
+      }
+
+      mediaRecorder.stop();
+    }
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      return (
+        <>
+          <Stage
+            key={`${t.duration}`}
+            width={1080}
+            height={1920}
+            duration={t.duration}
+            background="#F5EFE3"
+            loop={true}
+            autoplay={true}
+            persistKey="innovation-video"
+          >
+            <InnovationVideo
+              contentTop={t.contentTop}
+              photoHeight={t.photoHeight}
+              photoBottom={t.photoBottom}
+              ctaAnchor={t.ctaAnchor}
+              showArc={t.showArc}
+              contentGapScale={t.contentGapScale}
+            />
+          </Stage>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="Layout">
+              <TweakSlider
+                label="Content top"
+                value={t.contentTop}
+                min={40} max={400} step={10} unit="px"
+                onChange={(v) => setTweak('contentTop', v)} />
+              <TweakSlider
+                label="Gap scale"
+                value={t.contentGapScale}
+                min={0.6} max={1.4} step={0.05}
+                onChange={(v) => setTweak('contentGapScale', v)} />
+            </TweakSection>
+
+            <TweakSection label="Bottom photo">
+              <TweakSlider
+                label="Height"
+                value={t.photoHeight}
+                min={300} max={780} step={20} unit="px"
+                onChange={(v) => setTweak('photoHeight', v)} />
+              <TweakSlider
+                label="Lift from bottom"
+                value={t.photoBottom}
+                min={0} max={400} step={10} unit="px"
+                onChange={(v) => setTweak('photoBottom', v)} />
+            </TweakSection>
+
+            <TweakSection label="CTA position">
+              <TweakRadio
+                label="Anchor"
+                value={t.ctaAnchor}
+                options={[
+                  { value: 'inline',      label: 'Inline' },
+                  { value: 'photoTop',    label: 'Photo top' },
+                  { value: 'photoCenter', label: 'Centred' },
+                ]}
+                onChange={(v) => setTweak('ctaAnchor', v)} />
+            </TweakSection>
+
+            <TweakSection label="Decoration">
+              <TweakToggle
+                label="Top-right arc"
+                value={t.showArc}
+                onChange={(v) => setTweak('showArc', v)} />
+            </TweakSection>
+
+            <TweakSection label="Timing">
+              <TweakSlider
+                label="Duration"
+                value={t.duration}
+                min={10} max={24} step={1} unit="s"
+                onChange={(v) => setTweak('duration', v)} />
+            </TweakSection>
+
+            <ExportButton duration={t.duration} />
+          </TweaksPanel>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
