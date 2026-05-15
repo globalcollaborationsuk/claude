@@ -594,8 +594,7 @@
     const AnimatedSkyline = ({ width = 720, start = 0.2 }) => {
       const { time } = useTimeline();
       const t = clamp((time - start) / 1.6, 0, 1);
-      const drawn = t * 2.5;
-      const PATHLEN = 5000;
+      const opacity = Easing.easeOutCubic(t);
       return (
         <div style={{ width, opacity: clamp((time - start + 0.1) * 4, 0, 1), overflow: 'visible' }}>
           <svg viewBox="0 0 540 220" width={width} height={width * (220 / 540)} style={{ display: 'block', overflow: 'visible' }}>
@@ -606,7 +605,7 @@
                 <stop offset="100%" stopColor="#F9B10A" />
               </linearGradient>
             </defs>
-            <g stroke="url(#vsky-grad)" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={PATHLEN} strokeDashoffset={PATHLEN * drawn}>
+            <g stroke="url(#vsky-grad)" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={opacity}>
               <line x1="10" y1="190" x2="530" y2="190" />
               <path d="M 35 190 L 35 160" />
               <path d="M 95 190 L 95 125 Q 110 85 125 125 L 125 190" />
@@ -834,20 +833,26 @@
       const initFFmpeg = React.useCallback(async () => {
         if (ffmpegRef.current?.isLoaded()) return ffmpegRef.current;
         try {
-          if (typeof window === 'undefined' || !window.FFmpeg) {
-            throw new Error('FFmpeg library not loaded. Please check your internet connection.');
+          // Wait for FFmpeg to load from CDN
+          let attempts = 0;
+          while (!window.FFmpeg && attempts < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
           }
-          const { FFmpeg, fetchFile } = window.FFmpeg;
-          const ffmpeg = new FFmpeg.FFmpeg();
+          if (!window.FFmpeg) {
+            throw new Error('FFmpeg library failed to load from CDN');
+          }
+          const { FFmpeg } = window.FFmpeg;
+          const ffmpeg = new FFmpeg();
           ffmpeg.on('log', ({ message }) => { console.log('[FFmpeg]', message); });
           if (!ffmpeg.isLoaded()) {
-            setStatus('Loading FFmpeg...');
+            setStatus('Loading FFmpeg engine...');
             await ffmpeg.load();
           }
           ffmpegRef.current = ffmpeg;
           return ffmpeg;
         } catch (err) {
-          throw new Error(`FFmpeg init failed: ${err.message}`);
+          throw new Error(`FFmpeg unavailable: ${err.message}`);
         }
       }, []);
 
