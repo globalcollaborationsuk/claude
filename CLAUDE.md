@@ -6,46 +6,78 @@
 
 | Name | Hex | Usage |
 |------|-----|-------|
-| Navy Blue (Primary) | `#144774` | Main background, primary brand colour |
-| Red | `#EC0424` | Company name text, swoosh stripe, accents |
-| Orange | `#FF6A00` | Swoosh stripe, "GLOBAL" wordmark highlight |
+| Navy Blue (Primary) | `#144774` | Main background, primary text colour |
+| Red | `#EC0424` | Swoosh stripe, accent |
+| Orange | `#FF6A00` | Swoosh stripe, company name on cards, "GLOBAL" wordmark |
 | Purple/Violet | `#620DC5` | Globe highlight, gradient corner accents |
-| Royal Blue | `#1E5BC6` (approx) | Middle swoosh stripe (between red and orange) |
-| White | `#FFFFFF` | Body text, bridge structure in logo |
+| Royal Blue | `#1E5BC6` (approx) | Middle swoosh stripe |
+| Light Grey | `#E8E8E8` (approx) | Business card background |
+| White | `#FFFFFF` | Body text on dark, bridge structure in logo |
 
 ---
 
 ## Typography
 
-- **Primary font style**: Heavy condensed sans-serif — ALL CAPS, bold
-  - Likely: **Bebas Neue**, Anton, or Impact
-  - Used for: company names, headings, all display text
-- **"GLOBAL"** — largest, heaviest weight, sometimes with 3D/extrude effect (orange)
-- **"Sales Growth"** — slightly lighter weight in same family (red)
-- **"PRO"** — dark navy, same heavy style
-- **Contact/body text** — bold sans-serif, ALL CAPS, white on navy
+### Display / Headings
+- **Style**: Bold condensed ALL CAPS sans-serif
+- **Likely font**: Bebas Neue or Anton
+- **Used for**: Company name ("GLOBAL COLLABORATIONS UK LIMITED"), tagline, section headings
+- **Colour**: Orange (#FF6A00) on light backgrounds; Red (#EC0424) on dark backgrounds
+
+### Body / Contact Details
+- **Style**: Serif, mixed case, medium weight — italic for job titles
+- **Likely font**: Georgia or similar classic serif
+- **Used for**: Name, job title (italic), phone, email, web on business cards
+- **Colour**: Navy (#144774) on light backgrounds; White on dark backgrounds
 
 ---
 
 ## Logo
 
 - **Icon**: Globe with Golden Gate Bridge overlay + multi-colour swoosh arcs
-- **Swoosh arc order** (outer to inner): Orange → Blue → Red → Purple (fades)
+- **Swoosh arc order** (outer to inner): Orange → Red → Royal Blue → Purple (fades)
 - **Globe colours**: Blue oceans, purple/violet landmasses
 - **Bridge**: White wireframe structure
-- **Background**: Transparent or dark navy depending on use
-- Appears **top-right** on all documents/cards
+- **Background**: Transparent (used on light or dark)
+- Appears **top-right** on dark documents; **centred** on light/card backs
+
+---
+
+## Tagline
+
+> **"Driving Business Connections Fuelling Growth"**
+- Font: Bold condensed, title case, Navy Blue
+- Used on business card back, likely on website and presentations
+
+---
+
+## Contact Details (Sergiu Celan — Technical Director)
+
+| Field | Value |
+|-------|-------|
+| Name | Sergiu Celan |
+| Title | Technical Director |
+| Phone | 01522 452862 |
+| Mobile | 07523 280003 |
+| Email | sergiu@gcuk.group |
+| Web | www.gcuk.group |
 
 ---
 
 ## Layout & Design Patterns
 
-- **Background**: Dark navy (#144774), sometimes with subtle **halftone dot pattern** overlay
-- **Diagonal swoosh stripes**: Key brand element — appears on cards, backgrounds, presentations
-  - Stripe order: Orange / Blue / Red (diagonal, bottom-left to upper-right or curved)
-- **Border**: Thin blue line border on cards and documents
-- **Company name position**: Top-left, red ALL CAPS
-- **Logo position**: Top-right corner
+### Dark (Digital / Exhibition) Style
+- **Background**: Navy (#144774) with subtle halftone dot texture
+- **Diagonal/curved swoosh stripes**: Orange · Royal Blue · Red — key brand element
+- **Company name**: Top-left, red ALL CAPS
+- **Logo**: Top-right corner
+- **Border**: Thin blue line
+
+### Light (Print / Business Card) Style
+- **Background**: Light grey (#E8E8E8 approx)
+- **Diagonal stripe block**: Bottom-left corner, Orange · Red · Navy stripes
+- **Text**: Navy serif for contact details; orange condensed for company name
+- **Card size**: 85mm × 55mm (standard UK business card)
 
 ---
 
@@ -53,7 +85,7 @@
 
 | Brand | Domain / Contact |
 |-------|-----------------|
-| Global Collaborations UK Limited | Parent company |
+| Global Collaborations UK Limited | www.gcuk.group · sergiu@gcuk.group |
 | Global Exhibitions UK | www.global-exhibitions.uk · sales@global-exhibitions.uk · 07308-501-002 |
 | Global Sales Growth Pro | SaaS/tool brand |
 | Global AI Services | AI tools brand |
