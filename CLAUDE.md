@@ -10,7 +10,7 @@
 | Red | `#EC0424` | Swoosh stripe, accent |
 | Orange | `#FF6A00` | Swoosh stripe, company name on cards, "GLOBAL" wordmark |
 | Purple/Violet | `#620DC5` | Globe highlight, gradient corner accents |
-| Royal Blue | `#1E5BC6` (approx) | Middle swoosh stripe |
+| Royal Blue (Secondary) | `#1E5BC6` | Middle swoosh stripe, borders, accents |
 | Light Grey | `#E8E8E8` (approx) | Business card background |
 | White | `#FFFFFF` | Body text on dark, bridge structure in logo |
 
@@ -19,14 +19,12 @@
 ## Typography
 
 ### Display / Headings
-- **Style**: Bold condensed ALL CAPS sans-serif
-- **Likely font**: Bebas Neue or Anton
-- **Used for**: Company name ("GLOBAL COLLABORATIONS UK LIMITED"), tagline, section headings
+- **Font**: **Lithos Pro** — bold condensed ALL CAPS
+- **Used for**: Company name, tagline, section headings, "GLOBAL" wordmark
 - **Colour**: Orange (#FF6A00) on light backgrounds; Red (#EC0424) on dark backgrounds
 
 ### Body / Contact Details
-- **Style**: Serif, mixed case, medium weight — italic for job titles
-- **Likely font**: Georgia or similar classic serif
+- **Font**: **Minion Pro** — serif, mixed case, medium weight; italic for job titles
 - **Used for**: Name, job title (italic), phone, email, web on business cards
 - **Colour**: Navy (#144774) on light backgrounds; White on dark backgrounds
 
