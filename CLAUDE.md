@@ -24,7 +24,7 @@
 - **Colour**: Orange (#FF6A00) on light backgrounds; Red (#EC0424) on dark backgrounds
 
 ### Body / Contact Details
-- **Font**: **Minion Pro** — serif, mixed case, medium weight; italic for job titles
+- **Font**: **Minion Pro** — serif, mixed case, medium weight; italic for job titles (web/email fallback: **Georgia**)
 - **Used for**: Name, job title (italic), phone, email, web on business cards
 - **Colour**: Navy (#144774) on light backgrounds; White on dark backgrounds
 
