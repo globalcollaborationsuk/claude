@@ -90,5 +90,11 @@
 
 ---
 
+## Windows Environment Notes
+
+- **AVG Antivirus**: PowerShell (`C:\Windows\System32\WindowsPowerShell\`) is added to AVG exclusions — required for git-backup.ps1 and all git/SSH operations to run without being blocked (IDP.Generic false positive)
+
+---
+
 ## Visual Asset Location (Windows)
 `C:\Users\admin\Global Collaborations UK Ltd\Global Collaborations - Documents\GLOBAL COLLABORATIONS UK\Global Collaborations UK Ltd\Global Collaboration UK Ltd Visuals Website Logo BC etc`
