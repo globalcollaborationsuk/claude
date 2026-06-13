@@ -1,12 +1,12 @@
 # Outstanding Tasks — Priority List
-*Last updated: 2026-06-12*
+*Last updated: 2026-06-13*
 
 ---
 
 ## 🔴 CRITICAL — Business or data at risk
 
 1. **Add `/opt/tools/` to VPS rclone backup** — All 8 live tools (letters, prospector, gc-growth, calling, enricher, musicgen, car-bot, tsps-samples) unprotected. ~15-min fix.
-2. **SIGNWELL_API_KEY missing from `/opt/tools/letters/.env`** — E-signatures page broken for all users. Revenue-impacting.
+2. ~~**E-signatures page broken**~~ — ✅ Switched to self-hosted DocuSeal (2026-06-13)
 3. **n8n runners token is placeholder** (`PASTE_YOUR_TOKEN_HERE`) — Automation runners may be silently failing.
 4. **SGSS Batch 4 LinkedIn messages — NOT SENT** — 10 contacts waiting. Batch 3 nudges also due.
 
@@ -47,7 +47,7 @@
 ## Summary
 | Horizon | Focus |
 |---------|-------|
-| **Fire today** | VPS backup, SIGNWELL key, SGSS Batch 4, Pier View payment |
+| **Fire today** | VPS backup, SGSS Batch 4, Pier View payment |
 | **This week** | Letter Generator bugs, MKW workflows, BrandStand SEQs, IoD billing |
 | **This sprint** | LeadProspector outreach, Pier View pipeline + photos, SQLite→PostgreSQL |
 | **Ongoing** | LinkedIn Phase 2 decision, Community Email A, MACH outreach |
