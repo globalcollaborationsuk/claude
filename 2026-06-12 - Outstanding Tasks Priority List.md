@@ -21,7 +21,7 @@
 
 5. ~~**Pier View payment**~~ — Removed. Client already pays via Global Sales Growth; Pier View is an experimental account, no separate charge.
 6. **MKW WF1 + WF4 both empty Drafts** — Lead capture and pipeline notification automations not live.
-7. **Letter Generator routing + price bug** — "Start for Free" → Login instead of Signup. Price shows £9.99 not £7.99. No production test run.
+7. ~~**Letter Generator routing + price bug**~~ — ✅ Done. Routing fixed, price corrected to £7.99, DocuSeal verified (2026-06-15)
 8. **BrandStand SEQ 2–7 not built** — Only SEQ 1 done. 6 of 7 sequences missing.
 9. **IoD GHL billing unpaid** — Blocks roundtable email sequence.
 
