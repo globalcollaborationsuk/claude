@@ -14,7 +14,7 @@
 
 ## 🟠 HIGH — Revenue or client delivery blocked
 
-5. **Pier View payment not confirmed** — Client live with 120 posts scheduled. £199/mo MRR unconfirmed. Chase now.
+5. ~~**Pier View payment**~~ — Removed. Client already pays via Global Sales Growth; Pier View is an experimental account, no separate charge.
 6. **MKW WF1 + WF4 both empty Drafts** — Lead capture and pipeline notification automations not live.
 7. **Letter Generator routing + price bug** — "Start for Free" → Login instead of Signup. Price shows £9.99 not £7.99. No production test run.
 8. **BrandStand SEQ 2–7 not built** — Only SEQ 1 done. 6 of 7 sequences missing.
