@@ -1,0 +1,58 @@
+# Outstanding Tasks — Priority List
+*Last updated: 2026-06-15*
+
+---
+
+## ✅ Resolved (non-task)
+- **Disk C critically full (1.7GB free)** — Freed ~70GB (2026-06-15). SharePoint sync restored. WinDirStat used to identify culprits: CLAUDE BACKUP folder, vm_bundles, Outlook .ost cache.
+
+---
+
+## 🔴 CRITICAL — Business or data at risk
+
+1. ~~**Add `/opt/tools/` to VPS rclone backup**~~ — ✅ Done. Syncs to Google Drive (Global:VPS Backups/tools) every Sun & Wed at 2am (2026-06-13)
+2. ~~**E-signatures page broken**~~ — ✅ Switched to self-hosted DocuSeal (2026-06-13)
+3. ~~**n8n runners token is placeholder**~~ — ✅ Fixed. Real token added to docker-compose (2026-06-14)
+4. ~~**SGSS Batch 4 LinkedIn messages**~~ — ✅ Done. Sent (2026-06-15)
+
+---
+
+## 🟠 HIGH — Revenue or client delivery blocked
+
+5. ~~**Pier View payment**~~ — Removed. Client already pays via Global Sales Growth; Pier View is an experimental account, no separate charge.
+6. **MKW WF1 + WF4 both empty Drafts** — Lead capture and pipeline notification automations not live.
+7. ~~**Letter Generator routing + price bug**~~ — ✅ Done. Routing fixed, price corrected to £7.99, DocuSeal verified (2026-06-15)
+8. **BrandStand SEQ 2–7 not built** — Only SEQ 1 done. 6 of 7 sequences missing.
+9. **IoD GHL billing unpaid** — Blocks roundtable email sequence.
+
+---
+
+## 🟡 MEDIUM — Infrastructure / growth leverage
+
+10. ~~**SQLite → PostgreSQL migration on VPS**~~ — ✅ Done. GHL agent running on PostgreSQL (ghl_cache), 46,214 contacts cached across 8 accounts (2026-06-15)
+11. **LeadProspector: run bulk Lincolnshire search + 50 cold emails** — v1 deployed, just needs executing.
+12. **Pier View booking pipeline (5-stage GHL)** — No lead capture pipeline yet. Lost bookings until built.
+13. **Pier View real client photos for 10 booking posts** — Captions done, no images.
+14. **LinkedIn Phase 2 decision** — Playwright migration vs pause. Pending since early May.
+15. **Community Email A** — Cold invite to 11K contacts not sent.
+
+---
+
+## 🟢 LOWER — Important but not blocking
+
+16. **MACH 2026 outreach to 10 engineering targets** — Warm post-show prospects from April.
+17. **Website schema markup + directory submissions** — Tier 1+2 pages done. Schema and 20+ directories not started.
+18. **TSPS LinkedIn nurture sequence** — 6-touch warm sequence not built. 414 prospects waiting.
+19. **Paperclip GLO-1 verification** — End-to-end execution never confirmed.
+20. **BrandStand SEQ 4–7 segment names** — Needs confirmation from Oliver.
+21. **MKW WF5 outreach sequence** — Needs email subject lines drafted first.
+
+---
+
+## Summary
+| Horizon | Focus |
+|---------|-------|
+| **Fire today** | VPS backup, SGSS Batch 4, Pier View payment |
+| **This week** | Letter Generator bugs, MKW workflows, BrandStand SEQs, IoD billing |
+| **This sprint** | LeadProspector outreach, Pier View pipeline + photos, SQLite→PostgreSQL |
+| **Ongoing** | LinkedIn Phase 2 decision, Community Email A, MACH outreach |
