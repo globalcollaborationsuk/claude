@@ -24,7 +24,7 @@
 
 ## 🟡 MEDIUM — Infrastructure / growth leverage
 
-10. **SQLite → PostgreSQL migration on VPS** — Enables GHL agent background operation. ~15-min fix.
+10. ~~**SQLite → PostgreSQL migration on VPS**~~ — ✅ Done. GHL agent running on PostgreSQL (ghl_cache), 46,214 contacts cached across 8 accounts (2026-06-15)
 11. **LeadProspector: run bulk Lincolnshire search + 50 cold emails** — v1 deployed, just needs executing.
 12. **Pier View booking pipeline (5-stage GHL)** — No lead capture pipeline yet. Lost bookings until built.
 13. **Pier View real client photos for 10 booking posts** — Captions done, no images.
