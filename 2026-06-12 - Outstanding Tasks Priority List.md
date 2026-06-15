@@ -8,7 +8,7 @@
 1. ~~**Add `/opt/tools/` to VPS rclone backup**~~ — ✅ Done. Syncs to Google Drive (Global:VPS Backups/tools) every Sun & Wed at 2am (2026-06-13)
 2. ~~**E-signatures page broken**~~ — ✅ Switched to self-hosted DocuSeal (2026-06-13)
 3. ~~**n8n runners token is placeholder**~~ — ✅ Fixed. Real token added to docker-compose (2026-06-14)
-4. **SGSS Batch 4 LinkedIn messages — NOT SENT** — 10 contacts waiting. Batch 3 nudges also due.
+4. ~~**SGSS Batch 4 LinkedIn messages**~~ — ✅ Done. Sent (2026-06-15)
 
 ---
 
