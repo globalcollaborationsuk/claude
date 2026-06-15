@@ -1,5 +1,10 @@
 # Outstanding Tasks — Priority List
-*Last updated: 2026-06-13*
+*Last updated: 2026-06-15*
+
+---
+
+## ✅ Resolved (non-task)
+- **Disk C critically full (1.7GB free)** — Freed ~70GB (2026-06-15). SharePoint sync restored. WinDirStat used to identify culprits: CLAUDE BACKUP folder, vm_bundles, Outlook .ost cache.
 
 ---
 
